@@ -1,46 +1,51 @@
-import { galleryItems } from './gallery-items.js';
+import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-console.log(galleryItems);
+const container = document.querySelector(".gallery");
+const markup = galleryItems
+  .map(
+    ({ preview, original, description }) =>
+      `<li class="gallery__item">
+      <a class="gallery__link" href="${original}">
+        <img
+          class="gallery__image"
+          src="${preview}"
+          data-source="${original}"
+          alt="${description}"
+        />
+      </a>
+    </li>`
+  )
+  .join("");
 
-const container = document.querySelector('.js-gallery');
-function getGalleryCard(arr) {
-    return arr.map(({preview,original,description }) => `<li class="gallery__item">
-  <a class="gallery__link" href="${original}">
-    <img
-      class="gallery__image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
-    />
-  </a>
-</li>` ).join('');  
+container.insertAdjacentHTML("beforeend", markup);
+container.addEventListener("click", onClick);
+
+function onClick(event) {
+  event.preventDefault();
+
+  if (!event.target.classList.contains("gallery__image")) {
+    return;
+  }
+
+  const imgSource = event.target.dataset.source;
+  const instance = basicLightbox.create(
+    `<img src="${imgSource}" width="1280" height="auto">`,
+    {
+      onShow: (instance) => {
+        document.addEventListener("keydown", escKeyPress);
+      },
+      onClose: (instance) => {
+        document.removeEventListener("keydown", escKeyPress);
+      },
+    }
+  );
+
+  instance.show();
+
+  function escKeyPress(event) {
+    if (event.key === "Escape") {
+      instance.close();
+    }
+  }
 }
-container.insertAdjacentHTML('beforeend', getGalleryCard(galleryItems));
-
-container.addEventListener('click', onclick);
-
-function onclick(evt) {
-    evt.preventDefault();
-    if (evt.target === evt.currentTarget) {
-        return
-    }
- function openModalWindow() {
-  modalWindow.show();  
-}
-
-function closeModalWindow(evt) {
-    if (evt.code === 'Escape' && modalWindow.visible() === true) {
-        modalWindow.close();
-    }
-};   
-  
-const modalWindow = basicLightbox.create(`
-     <img src="${evt.target.dataset.source}">
-`,  {
-      onShow: () => document.addEventListener("keydown", closeModalWindow),
-      onClose: () => document.removeEventListener("keydown", closeModalWindow),
-    }
-);
-    openModalWindow()
-};
